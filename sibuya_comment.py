@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue Oct 15 15:36:08 2019
+Created on Tue Oct 15 15:08:10 2019
 
 @author: user
 """
 
 from bs4 import BeautifulSoup
-import json
+#import json
 import requests
 
 target_url = "https://www.youtube.com/watch?v=AILrIqsvXpQ"
@@ -24,13 +24,11 @@ for iframe in soup.find_all("iframe"):
     if("live_chat_replay" in iframe["src"]):
         next_url= iframe["src"]
 
-
 while(1):
 
     try:
         html = session.get(next_url, headers=headers)
         soup = BeautifulSoup(html.text,"lxml")
-
 
         # 次に飛ぶurlのデータがある部分をfind_allで探してsplitで整形
         for scrp in soup.find_all("script"):
@@ -50,41 +48,13 @@ while(1):
         continue_url = dics["continuationContents"]["liveChatContinuation"]["continuations"][0]["liveChatReplayContinuationData"]["continuation"]
         next_url = "https://www.youtube.com/live_chat_replay?continuation=" + continue_url
         # dics["continuationContents"]["liveChatContinuation"]["actions"]がコメントデータのリスト。先頭はノイズデータなので[1:]で保存
-        
         for samp in dics["continuationContents"]["liveChatContinuation"]["actions"][1:]:
-            d ={}
             try:
-                samp = samp['replayChatItemAction']['actions'][0]['addChatItemAction']['item']
-                chat_type = list(samp.keys())[0]
-                if 'liveChatTextMessageRenderer' == chat_type:
-                    #通常チャットの処理
-                    if 'simpletext' in samp['liveChatTextMessageRenderer']['message']:
-                        d['messege'] = samp['liveChatTextMessageRenderer']['message']['run'][0]['text']
-                        """
-                    else:
-                        d['messege'] = ''
-                        print("c")
-                        for elem in samp['liveChatTextMessageRenderer']['message']['runs']:
-                            print("d")
-                            if 'text' in elem:
-                                print("e")
-                                d['message'] += elem['text']
-                            else:   
-                                print("f")
-                                d['message'] += elem['emoji']['shortcuts'][0]
-                                print("g")
-                t = samp['liveChatTextMessageRenderer']['timestampText']['simpleText']
-                print("h")
-                d['timestamp'] = convert_time(t)
-                d['id'] = samp['liveChatTextMessageRenderer']['authorExternalChannelId']
-                """
-            except Exception:
-                #print(Exception.args)
+                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"])+" "+
+                samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]+"\n")
+            except:
+                print("時間を取得できませんでした")
                 continue
-            comment_data.append(d)
-return comment_data
-            
-            #comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"])+"\n")
             
     # next_urlが入手できなくなったら終わり
     except:
@@ -93,14 +63,3 @@ return comment_data
 # comment_data.txt にコメントデータを書き込む
 with open("sibuya_comment_data3.csv", mode='w', encoding="utf-8_sig") as f:
     f.writelines(comment_data)
-"""    
-def convert_time(input_t):
-    if input_t[0] == '-':
-        return 0
-    t = list(map(int, input_t.split(':')))
-    if len(t) == 2:
-        t = 60 * t[0] + t[1]
-    else:
-        t = 60 * 60 * t[0] + 60 * t[1] + t[2]
-    return t
-"""

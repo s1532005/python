@@ -50,6 +50,11 @@ while(1):
         # dics["continuationContents"]["liveChatContinuation"]["actions"]がコメントデータのリスト。先頭はノイズデータなので[1:]で保存
         for samp in dics["continuationContents"]["liveChatContinuation"]["actions"][1:]:
             try:
+                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]))
+            except:
+                print("時間を取得できませんでした")
+                continue
+            try:
                 comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"])+"\n")
             except:
                 print("取得できないコメント")
@@ -60,5 +65,5 @@ while(1):
         break
 
 # comment_data.txt にコメントデータを書き込む
-with open("otoja_comment_data.csv", mode='w', encoding="utf-8_sig") as f:
+with open("otoja_comment_data3.csv", mode='w', encoding="utf-8_sig") as f:
     f.writelines(comment_data)
