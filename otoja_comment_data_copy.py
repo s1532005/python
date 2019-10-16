@@ -24,13 +24,11 @@ for iframe in soup.find_all("iframe"):
     if("live_chat_replay" in iframe["src"]):
         next_url= iframe["src"]
 
-
 while(1):
 
     try:
         html = session.get(next_url, headers=headers)
         soup = BeautifulSoup(html.text,"lxml")
-
 
         # 次に飛ぶurlのデータがある部分をfind_allで探してsplitで整形
         for scrp in soup.find_all("script"):
@@ -51,12 +49,16 @@ while(1):
         next_url = "https://www.youtube.com/live_chat_replay?continuation=" + continue_url
         # dics["continuationContents"]["liveChatContinuation"]["actions"]がコメントデータのリスト。先頭はノイズデータなので[1:]で保存
         for samp in dics["continuationContents"]["liveChatContinuation"]["actions"][1:]:
-            comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"])+"\n")
+            try:
+                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"])+"\n")
+            except:
+                print("取得できないコメント")
+                continue
 
     # next_urlが入手できなくなったら終わり
     except:
         break
 
 # comment_data.txt にコメントデータを書き込む
-with open("otoja_comment_data6.csv", mode='w', encoding="utf-8_sig") as f:
+with open("otoja_comment_data.csv", mode='w', encoding="utf-8_sig") as f:
     f.writelines(comment_data)
