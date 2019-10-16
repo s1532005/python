@@ -58,5 +58,5 @@ while(1):
         break
 
 # comment_data.txt にコメントデータを書き込む
-with open("otoja_comment_data5.csv", mode='w', encoding="utf-8_sig") as f:
+with open("otoja_comment_data6.csv", mode='w', encoding="utf-8_sig") as f:
     f.writelines(comment_data)
