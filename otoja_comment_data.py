@@ -8,11 +8,13 @@ Created on Tue Oct 15 15:08:10 2019
 from bs4 import BeautifulSoup
 #import json
 import requests
+import csv
 
-target_url = "https://www.youtube.com/watch?v=AILrIqsvXpQ"
+target_url = "https://www.youtube.com/watch?v=EXPVfeiIEmE&list=PL1Z1KdfmKueY_A2Gmx7olbDNPlMMgL1oa&index=44&t=0s"
 dict_str = ""
 next_url = ""
 comment_data = []
+comment_data2 = []
 session = requests.Session()
 headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
 
@@ -50,10 +52,10 @@ while(1):
         # dics["continuationContents"]["liveChatContinuation"]["actions"]がコメントデータのリスト。先頭はノイズデータなので[1:]で保存
         for samp in dics["continuationContents"]["liveChatContinuation"]["actions"][1:]:
             try:
-                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"])+" "+
-                samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]+"\n")
+                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]+"\n"))
+                comment_data2.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]+"\n"))
             except:
-                print("時間を取得できませんでした")
+                print("取得できませんでした")
                 continue
             
     # next_urlが入手できなくなったら終わり
@@ -61,5 +63,6 @@ while(1):
         break
 
 # comment_data.txt にコメントデータを書き込む
-with open("sibuya_comment_data.csv", mode='w', encoding="utf-8_sig") as f:
+with open("otoja_comment_data.csv", mode='w', encoding="utf-8_sig") as f:
     f.writelines(comment_data)
+    f.writelines(comment_data2)
