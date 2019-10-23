@@ -8,11 +8,14 @@ Created on Tue Oct 15 15:08:10 2019
 from bs4 import BeautifulSoup
 #import json
 import requests
+import csv
 
 target_url = "https://www.youtube.com/watch?v=AILrIqsvXpQ"
 dict_str = ""
 next_url = ""
+t = []
 comment_data = []
+comment_data2 = []
 session = requests.Session()
 headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
 
@@ -50,16 +53,21 @@ while(1):
         # dics["continuationContents"]["liveChatContinuation"]["actions"]がコメントデータのリスト。先頭はノイズデータなので[1:]で保存
         for samp in dics["continuationContents"]["liveChatContinuation"]["actions"][1:]:
             try:
-                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"])+" "+
-                samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]+"\n")
+                #comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]+"\n"))
+                comment_data2.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]+"\n"))
+
             except:
-                print("時間を取得できませんでした")
+                print("取得できませんでした")
                 continue
-            
+            time_msec=int(samp["replayChatItemAction"]["videoOffsetTimeMsec"])#コメントした時間のミリ秒を取得
+            time_msec=int(time_msec/1000)#ミリ秒→秒に変換
+           # print(str(time_msec)+"秒")
     # next_urlが入手できなくなったら終わり
     except:
         break
-
 # comment_data.txt にコメントデータを書き込む
-with open("sibuya_comment_data.csv", mode='w', encoding="utf-8_sig") as f:
-    f.writelines(comment_data)
+with open("sibuya_comment_data4.csv", mode='w', encoding="utf-8_sig") as f:         
+    #f.writelines(comment_data)
+    f.writelines(comment_data2)
+    f.writelines(time_msec)
+
