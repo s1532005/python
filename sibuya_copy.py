@@ -72,7 +72,7 @@ while(1):
                 t=(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"])+"\n")
                 d = convert_time(t)
                 e = str(d)
-                time_data = e
+                time_data.append(e + "\n")
                 #t.append(convert_time(t))
                 #d.append(d)
             except:
@@ -82,7 +82,7 @@ while(1):
     except:
         break
 # comment_data.txt にコメントデータを書き込む
-with open("sibuya_comment_data6.csv", mode='w', encoding="utf-8_sig") as f:         
+with open("sibuya_comment_data4.csv", mode='w', encoding="utf-8_sig") as f:         
     #d=convert_time(t)
     #f.writelines(e)
     f.writelines(time_data)

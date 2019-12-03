@@ -6,7 +6,6 @@ import pathlib
 import sys
 from argparse import ArgumentParser
 
-import pyperclip
 import requests
 from bs4 import BeautifulSoup
 
@@ -18,6 +17,7 @@ def get_comment(target_url):
         message コメント str型
         timestanp 投稿された時間(秒) int型
     '''
+    target_url = "https://www.youtube.com/watch?v=AeOB29CGu44"
     comment_data = []
     dict_str = ''
     next_url = ''
@@ -221,5 +221,5 @@ if __name__ == '__main__':
             writer.writerows(comment_data)
 
     comment = find_highlight(comment_data, args.i, args.g - 1, args.m)
-    pyperclip.copy(comment)
+    #pyperclip.copy(comment)
     print(comment)

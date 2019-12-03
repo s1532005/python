@@ -14,13 +14,23 @@ target_url = "https://www.youtube.com/watch?v=AILrIqsvXpQ"
 dict_str = ""
 next_url = ""
 comment_data = []
-comment_data2 = []
+time_data = []
 session = requests.Session()
 headers = {'user-agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36'}
 
 # まず動画ページにrequestsを実行しhtmlソースを手に入れてlive_chat_replayの先頭のurlを入手
 html = requests.get(target_url)
 soup = BeautifulSoup(html.text, "html.parser")
+
+def convert_time(input_t):
+    if input_t[0] == '-':
+        return 0
+    t = list(map(int, input_t.split(':')))
+    if len(t) == 2:
+        t = 60 * t[0] + t[1]
+    else:
+        t = 60 * 60 * t[0] + 60 * t[1] + t[2]
+    return t
 
 for iframe in soup.find_all("iframe"):
     if("live_chat_replay" in iframe["src"]):
@@ -52,17 +62,30 @@ while(1):
         # dics["continuationContents"]["liveChatContinuation"]["actions"]がコメントデータのリスト。先頭はノイズデータなので[1:]で保存
         for samp in dics["continuationContents"]["liveChatContinuation"]["actions"][1:]:
             try:
-                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]+"\n"))
-                comment_data2.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]+"\n"))
+                #comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"]+"\n"))
+                comment_data.append(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["message"]["runs"][0]["text"]+"\n"))
+
             except:
-                print("取得できませんでした")
+                print("コメント取得失敗")
                 continue
-            
+            try:
+                t=(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"])+"\n")
+                d = convert_time(t)
+                e = str(d)
+                time_data.append(e + "\n")
+                #t.append(convert_time(t))
+                #d.append(d)
+            except:
+                print("時間取得失敗")
+                continue
     # next_urlが入手できなくなったら終わり
     except:
         break
-
 # comment_data.txt にコメントデータを書き込む
-with open("sibuya_comment_data3.csv", mode='w', encoding="utf-8_sig") as f:
+with open("sibuya_comment_data5.csv", mode='w', encoding="utf-8_sig") as f:         
+    #d=convert_time(t)
+    #f.writelines(e)
+    f.writelines(time_data)
     f.writelines(comment_data)
-    f.writelines(comment_data2)
+
+    

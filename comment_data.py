@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 """
+Created on Thu Nov 28 12:21:47 2019
+
+@author: user
+"""
+
+# -*- coding: utf-8 -*-
+"""
 Created on Tue Oct 15 15:08:10 2019
 
 @author: user
@@ -10,7 +17,8 @@ from bs4 import BeautifulSoup
 import requests
 import csv
 
-target_url = "https://www.youtube.com/watch?v=AILrIqsvXpQ"
+#　targert_urlにURLを書き込む
+target_url = "https://www.youtube.com/watch?v=WorGi0t_7n8"
 dict_str = ""
 next_url = ""
 comment_data = []
@@ -72,7 +80,7 @@ while(1):
                 t=(str(samp["replayChatItemAction"]["actions"][0]["addChatItemAction"]["item"]["liveChatTextMessageRenderer"]["timestampText"]["simpleText"])+"\n")
                 d = convert_time(t)
                 e = str(d)
-                time_data = e
+                time_data.append(e + "\n")
                 #t.append(convert_time(t))
                 #d.append(d)
             except:
@@ -81,8 +89,8 @@ while(1):
     # next_urlが入手できなくなったら終わり
     except:
         break
-# comment_data.txt にコメントデータを書き込む
-with open("sibuya_comment_data6.csv", mode='w', encoding="utf-8_sig") as f:         
+# ファイル名を入力、コメントデータの書き込み
+with open("otoja_time_data.csv", mode='w', encoding="utf-8_sig") as f:         
     #d=convert_time(t)
     #f.writelines(e)
     f.writelines(time_data)
